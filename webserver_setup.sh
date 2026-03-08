@@ -42,37 +42,22 @@ sleep 2
 
 # Install Apache2
 echo "[2/7] Installing Apache2..."
-apt-get update -qq
-apt-get install -y apache2 openssl curl &>/dev/null
+# Preinstalled
 
 # Create Team Page
 echo "[3/7] Creating team page..."
 cat > /var/www/html/index.html <<EOF
-<!DOCTYPE html>
-<html>
-<head>
-    <title>NCAE Cyber Games - Team ${TEAM_NUM}</title>
-    <style>
-        body { font-family: Arial; text-align: center; margin-top: 50px; background: #667eea; color: white; }
-        h1 { font-size: 3em; }
-    </style>
-</head>
-<body>
-    <h1>Team ${TEAM_NUM}</h1>
-    <p>NCAE Cyber Games 2026</p>
-    <p>Web Server Online</p>
-</body>
-</html>
+team${TEAM_NUM}
 EOF
 
 # SSL Setup
 echo "[4/7] Configuring SSL..."
 a2enmod ssl &>/dev/null
-mkdir -p /etc/ssl/ncace
-
-openssl genrsa -out /etc/ssl/ncace/web.key 4096 2>/dev/null
-openssl req -new -key /etc/ssl/ncace/web.key -out /etc/ssl/ncace/web.csr \
-    -subj "/C=US/O=Blue Team/CN=web.ncacecybergames.org" 2>/dev/null
+systemctl restart apache2
+mkdir -p /etc/ssl/ncae
+openssl genrsa -out /etc/ssl/ncae/web.key 4096 2>/dev/null
+openssl req -new -key /etc/ssl/ncae/web.key -out /etc/ssl/ncae/web.crt \
+    -subj "/C=US/O=Messiah/CN=web.ncaecybergames.org" 2>/dev/null
 
 cat > /etc/apache2/sites-available/default-ssl.conf <<'SSLCONF'
 <IfModule mod_ssl.c>
@@ -81,9 +66,9 @@ cat > /etc/apache2/sites-available/default-ssl.conf <<'SSLCONF'
         DocumentRoot /var/www/html
         
         SSLEngine on
-        SSLCertificateFile /etc/ssl/ncace/web.crt
-        SSLCertificateKeyFile /etc/ssl/ncace/web.key
-        SSLCertificateChainFile /etc/ssl/ncace/ca.crt
+        SSLCertificateFile /etc/ssl/ncae/web.crt
+        SSLCertificateKeyFile /etc/ssl/ncae/web.key
+        SSLCertificateChainFile /etc/ssl/ncae/ca.crt
         
         <FilesMatch "\.(cgi|shtml|phtml|php)$">
             SSLOptions +StdEnvVars
