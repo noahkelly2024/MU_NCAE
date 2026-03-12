@@ -83,6 +83,9 @@ systemctl start postgresql 2>/dev/null || true
 echo "[*] Locking user accounts..."
 KEEP_USERS=("root" "postgres" "scoring" "ubuntu" "daemon" "nobody")
 [[ -d /vagrant ]] && KEEP_USERS+=("vagrant")
+# Add current user to whitelist to prevent locking out the operator
+CURRENT_USER="${SUDO_USER:-$USER}"
+[[ -n "$CURRENT_USER" ]] && [[ "$CURRENT_USER" != "root" ]] && KEEP_USERS+=("$CURRENT_USER")
 while IFS= read -r user; do
     uid=$(id -u "$user" 2>/dev/null || echo 0)
     if [[ $uid -ge 1000 ]] && [[ ! " ${KEEP_USERS[*]} " == *" $user "* ]]; then

@@ -54,6 +54,9 @@ echo "[*] Locking down user accounts with CISA-compliant passwords..."
 KEEP_USERS=("root" "ubuntu" "www-data" "scoring" "daemon" "nobody")
 # Add vagrant to whitelist only when running in a local Vagrant lab
 [[ -d /vagrant ]] && KEEP_USERS+=("vagrant")
+# Add current user to whitelist to prevent locking out the operator
+CURRENT_USER="${SUDO_USER:-$USER}"
+[[ -n "$CURRENT_USER" ]] && [[ "$CURRENT_USER" != "root" ]] && KEEP_USERS+=("$CURRENT_USER")
 
 while IFS= read -r user; do
     uid=$(id -u "$user" 2>/dev/null || echo 0)

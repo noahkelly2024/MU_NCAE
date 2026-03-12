@@ -805,7 +805,8 @@ bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</b
                 <div class="alert alert-info">
                     After network is configured, clone the repo and run deployment:
                 </div>
-                <pre><code># Clone repository
+                <pre><code># Install git and clone repository
+apt install -y git
 git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
 cd /opt/ncae && chmod +x *.sh
 
@@ -960,7 +961,8 @@ bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</b
                 <div class="alert alert-info">
                     After network is configured, clone the repo and run deployment:
                 </div>
-                <pre><code># Clone repository
+                <pre><code># Install git and clone repository
+dnf install -y git
 git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
 cd /opt/ncae && chmod +x *.sh
 
@@ -1124,7 +1126,8 @@ bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</b
                 <div class="alert alert-info">
                     After network is configured, clone the repo and run deployment:
                 </div>
-                <pre><code># Clone repository
+                <pre><code># Install git and clone repository
+apt install -y git
 git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
 cd /opt/ncae && chmod +x *.sh
 
@@ -1249,7 +1252,8 @@ bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</b
                 <div class="alert alert-info">
                     After network is configured, clone the repo and run deployment:
                 </div>
-                <pre><code># Clone repository
+                <pre><code># Install git and clone repository
+dnf install -y git
 git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
 cd /opt/ncae && chmod +x *.sh
 
@@ -1433,7 +1437,8 @@ bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</b
                 <div class="alert alert-info">
                     After network is configured, clone the repo and run deployment:
                 </div>
-                <pre><code># Clone repository
+                <pre><code># Install git and clone repository
+apt install -y git
 git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
 cd /opt/ncae && chmod +x *.sh
 
@@ -1852,7 +1857,10 @@ ping <span class="ip-172">172.18.13.11</span></code><button class="copy-btn" onc
 
                 <h4>Step 2: Clone & Deploy on Each VM (3-5 min per VM - run in parallel)</h4>
                 <p>On EACH VM individually, run these commands:</p>
-                <pre><code># Clone repository
+                <pre><code># Install git (Ubuntu: apt, Rocky: dnf)
+apt install -y git || dnf install -y git
+
+# Clone repository
 git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
 cd /opt/ncae && chmod +x *.sh
 
@@ -1914,6 +1922,7 @@ sudo ./deploy_all.sh
                             <strong>⚡ Individual Deployment</strong> - Each VM configures itself independently
                         </div>
                         <ul class="checklist">
+                            <li>On EACH VM: <code>apt install -y git || dnf install -y git</code></li>
                             <li>On EACH VM: <code>git clone https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae</code></li>
                             <li>On EACH VM: <code>cd /opt/ncae && chmod +x *.sh</code></li>
                             <li>On EACH VM: <code>sudo ./deploy_all.sh</code></li>
