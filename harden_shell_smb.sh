@@ -214,8 +214,8 @@ cp /etc/samba/smb.conf "/etc/samba/smb.conf.bak.$(date +%s)" 2>/dev/null || true
 
 cat > /etc/samba/smb.conf <<EOF
 [global]
-    workgroup = NCAE
-    server string = NightHax Shell ${TEAM}
+    workgroup = WORKGROUP
+    server string = Team ${TEAM} Shell Server
     netbios name = SHELL${TEAM}
     security = user
     map to guest = Never
@@ -224,12 +224,30 @@ cat > /etc/samba/smb.conf <<EOF
     max log size = 50
     logging = file
 
-    # Harden: SMBv2+ only
-    server min protocol = SMB2
-    ntlm auth = ntlmv2-only
+    # Protocol settings - ENABLE SMB1 for scoring engine compatibility
+    # Note: SMB1 has security vulnerabilities but may be required by scoring
+    server min protocol = NT1
+    server max protocol = SMB3
+    client min protocol = NT1
+    client max protocol = SMB3
+    
+    # Authentication - Allow NTLMv1 for legacy compatibility
+    ntlm auth = yes
     restrict anonymous = 2
     client signing = auto
-    server signing = mandatory
+    server signing = auto
+    
+    # NetBIOS/Workgroup browsing - CRITICAL for workgroup availability
+    dns proxy = no
+    wins support = yes
+    local master = yes
+    preferred master = yes
+    os level = 65
+    domain master = no
+    
+    # Interface binding - bind to all interfaces
+    interfaces = lo eth0 ens18
+    bind interfaces only = no
 
 # -- WRITE SHARE --------------------------------------------------------------
 # [!] Rename section if scoreboard specifies a different share name
@@ -262,9 +280,31 @@ testparm -s /etc/samba/smb.conf 2>/dev/null && echo "[+] smb.conf valid" || echo
 echo "[*] Starting Samba..."
 systemctl enable smb 2>/dev/null || true
 systemctl restart smb 2>/dev/null || true
-# nmb may not exist on Rocky 9 minimal - optional
+
+# nmbd handles NetBIOS name resolution and workgroup browsing
+# Required for "workgroup" functionality - install if missing
+if ! command -v nmbd &>/dev/null; then
+    echo "[*] Installing nmbd for NetBIOS/workgroup support..."
+    dnf install -y samba-winbind-clients 2>/dev/null || true
+fi
+
 systemctl enable nmb 2>/dev/null || true
 systemctl restart nmb 2>/dev/null || true
+sleep 2
+
+# Verify services are running
+if systemctl is-active --quiet smb; then
+    echo "[+] smb service: running"
+else
+    echo "[!] smb service: FAILED - check: systemctl status smb"
+fi
+
+if systemctl is-active --quiet nmb; then
+    echo "[+] nmb service: running (workgroup browsing enabled)"
+else
+    echo "[!] nmb service: not running (workgroup browsing may not work)"
+    echo "    This is OK if scoring engine uses direct IP connection"
+fi
 # -- 10. SELinux contexts ------------------------------------------------------
 # SELinux on Rocky Linux enforces mandatory access control based on file labels
 # samba_share_t is the correct type for files/dirs that Samba is allowed to serve
@@ -355,3 +395,19 @@ echo "  (Password in $CRED_FILE)"
 echo ""
 echo "  [!!] CHECK SCOREBOARD AT 10:30 AM for exact share names expected by scoring engine"
 echo "       If wrong, edit /etc/samba/smb.conf share names and: systemctl restart smb"
+echo ""
+echo "SMB TROUBLESHOOTING:"
+echo "  Test SMB locally:     smbclient -L //localhost -U scoring"
+echo "  Check services:       systemctl status smb nmb"
+echo "  Check firewall:       firewall-cmd --list-all"
+echo "  Validate config:      testparm -s"
+echo "  Check logs:           tail -f /var/log/samba/log.smbd"
+echo "  List shares:          smbclient -L //172.18.14.${TEAM} -N"
+echo "  Test with password:   smbclient //172.18.14.${TEAM}/write -U scoring"
+echo ""
+echo "  Common fixes:"
+echo "    - If 'SMB1 disabled': This is expected - use SMB2/3 client"
+echo "    - If 'workgroup': Workgroup is WORKGROUP, use: smbclient -W WORKGROUP ..."
+echo "    - If 'connection refused': Check firewall allows 139,445 from scoring subnet"
+echo "    - If 'access denied': Check password in $CRED_FILE matches what you're using"
+echo ""

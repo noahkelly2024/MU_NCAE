@@ -76,7 +76,6 @@ if [[ -z "$ROLE" ]]; then
             ;;
     esac
 fi
-        read -rp "Enter role: " ROLE
 
 echo "[*] Role: $ROLE"
 

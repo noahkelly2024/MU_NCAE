@@ -185,7 +185,7 @@ mkdir -p "$SMB_WRITE_DIR" "$SMB_READ_DIR"
 
 # Populate read share with scoring-expected files
 cat > "$SMB_READ_DIR/readme.txt" <<'EOF'
-NCAE CyberGames 2026 - NightHax Team
+NCAE CyberGames 2026 - Messiah Team
 SMB Read Share - operational
 EOF
 cat > "$SMB_READ_DIR/scorefile.txt" <<'EOF'
@@ -215,7 +215,7 @@ cp /etc/samba/smb.conf "/etc/samba/smb.conf.bak.$(date +%s)" 2>/dev/null || true
 cat > /etc/samba/smb.conf <<EOF
 [global]
     workgroup = NCAE
-    server string = NightHax Shell ${TEAM}
+    server string = Messiah Shell ${TEAM}
     netbios name = SHELL${TEAM}
     security = user
     map to guest = Never

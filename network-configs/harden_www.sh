@@ -182,7 +182,7 @@ EOF
     openssl req -new -newkey rsa:4096 -nodes \
         -keyout "$SSL_DIR/private/server.key" \
         -out "$SSL_DIR/certs/server.csr" \
-        -subj "/CN=${DOMAIN}/O=NightHax/C=US" 2>&1
+        -subj "/CN=${DOMAIN}/O=Messiah/C=US" 2>&1
     chmod 600 "$SSL_DIR/private/server.key"
 
     if [[ ! -f "$SSL_DIR/private/server.key" ]]; then
@@ -263,6 +263,9 @@ EOF
     # Validate and restart
     if apache2ctl configtest 2>/dev/null; then
         systemctl restart apache2 && echo "[+] Apache restarted OK"
+        # Append team identifier to index.html for scoring
+        echo 'team11' | tee -a /var/www/html/index.html > /dev/null
+        echo "[+] Added team identifier to index.html"
     else
         echo "[!] Apache configtest failed - check manually"
         apache2ctl configtest 2>&1 | tee -a "$LOGFILE"

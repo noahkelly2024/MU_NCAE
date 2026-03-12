@@ -784,14 +784,19 @@ ss -tulpn</code><button class="copy-btn" onclick="copyCode(this)">Copy</button><
                 <pre><code>cat > /tmp/net.sh << 'EOF'
 #!/bin/bash
 TEAM=<span class="team-num">11</span>
-cat > /etc/netplan/01-netcfg.yaml << YAML
+cat > /etc/netplan/01-network-manager-all.yaml << YAML
 network:
   version: 2
+  renderer: NetworkManager
   ethernets:
     ens18:
-      addresses: [192.168.${TEAM}.5/24]
-      routes: [{to: default, via: 192.168.${TEAM}.1}]
-      nameservers: {addresses: [8.8.8.8]}
+      addresses:
+        - 192.168.${TEAM}.5/24
+      gateway4: 192.168.${TEAM}.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 192.168.${TEAM}.12
 YAML
 chmod 600 /etc/netplan/01-netcfg.yaml
 netplan apply
@@ -799,15 +804,15 @@ echo "✅ Web Server network configured: 192.168.${TEAM}.5"
 ip addr show | grep "inet 192.168"
 EOF
 
-bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+sudo bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
 
                 <h3>🚀 Deployment (Step 2 - Clone & Deploy)</h3>
                 <div class="alert alert-info">
                     After network is configured, clone the repo and run deployment:
                 </div>
                 <pre><code># Clone repository
-git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
-cd /opt/ncae && chmod +x *.sh
+sudo git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
+cd /opt/ncae && sudo chmod +x *.sh
 
 # Run interactive deployment
 sudo ./deploy_all.sh
@@ -947,22 +952,22 @@ sha256sum -c /root/www_baseline.sha256</code><button class="copy-btn" onclick="c
                 <pre><code>cat > /tmp/net.sh << 'EOF'
 #!/bin/bash
 TEAM=<span class="team-num">11</span>
-nmcli con mod "System eth0" ipv4.addresses 192.168.${TEAM}.12/24 ipv4.gateway 192.168.${TEAM}.1 ipv4.dns "8.8.8.8" ipv4.method manual 2>/dev/null || \
-nmcli con mod ens18 ipv4.addresses 192.168.${TEAM}.12/24 ipv4.gateway 192.168.${TEAM}.1 ipv4.dns "8.8.8.8" ipv4.method manual
+nmcli con mod "System eth0" ipv4.addresses 192.168.${TEAM}.12/24 ipv4.gateway 192.168.${TEAM}.1 ipv4.dns "8.8.8.8, 192.168.${TEAM}.12" ipv4.method manual 2>/dev/null || \
+nmcli con mod ens18 ipv4.addresses 192.168.${TEAM}.12/24 ipv4.gateway 192.168.${TEAM}.1 ipv4.dns "8.8.8.8, 192.168.${TEAM}.12" ipv4.method manual
 nmcli con up "System eth0" 2>/dev/null || nmcli con up ens18
 echo "✅ DNS network configured: 192.168.${TEAM}.12"
 ip addr show | grep "inet 192.168"
 EOF
 
-bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+sudo bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
 
                 <h3>🚀 Deployment (Step 2 - Clone & Deploy)</h3>
                 <div class="alert alert-info">
                     After network is configured, clone the repo and run deployment:
                 </div>
                 <pre><code># Clone repository
-git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
-cd /opt/ncae && chmod +x *.sh
+sudo git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
+cd /opt/ncae && sudo chmod +x *.sh
 
 # Run interactive deployment
 sudo ./deploy_all.sh
@@ -1103,14 +1108,19 @@ dig @<span class="ip-172">172.18.13.11</span> www.team<span class="team-num">11<
                 <pre><code>cat > /tmp/net.sh << 'EOF'
 #!/bin/bash
 TEAM=<span class="team-num">11</span>
-cat > /etc/netplan/01-netcfg.yaml << YAML
+cat > /etc/netplan/01-network-manager-all.yaml << YAML
 network:
   version: 2
+  renderer: NetworkManager
   ethernets:
     ens18:
-      addresses: [192.168.${TEAM}.7/24]
-      routes: [{to: default, via: 192.168.${TEAM}.1}]
-      nameservers: {addresses: [8.8.8.8]}
+      addresses:
+        - 192.168.${TEAM}.7/24
+      gateway4: 192.168.${TEAM}.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 192.168.${TEAM}.12
 YAML
 chmod 600 /etc/netplan/01-netcfg.yaml
 netplan apply
@@ -1118,15 +1128,15 @@ echo "✅ Database network configured: 192.168.${TEAM}.7"
 ip addr show | grep "inet 192.168"
 EOF
 
-bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+sudo bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
 
                 <h3>🚀 Deployment (Step 2 - Clone & Deploy)</h3>
                 <div class="alert alert-info">
                     After network is configured, clone the repo and run deployment:
                 </div>
                 <pre><code># Clone repository
-git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
-cd /opt/ncae && chmod +x *.sh
+sudo git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
+cd /opt/ncae && sudo chmod +x *.sh
 
 # Run interactive deployment
 sudo ./deploy_all.sh
@@ -1236,22 +1246,22 @@ psql -U scoring -d scoringdb -c "\l+"</code><button class="copy-btn" onclick="co
                 <pre><code>cat > /tmp/net.sh << 'EOF'
 #!/bin/bash
 TEAM=<span class="team-num">11</span>
-nmcli con mod "System eth0" ipv4.addresses 172.18.14.${TEAM}/16 ipv4.gateway 172.18.0.1 ipv4.dns "8.8.8.8" ipv4.method manual 2>/dev/null || \
-nmcli con mod ens18 ipv4.addresses 172.18.14.${TEAM}/16 ipv4.gateway 172.18.0.1 ipv4.dns "8.8.8.8" ipv4.method manual
+nmcli con mod "System eth0" ipv4.addresses 172.18.14.${TEAM}/16 ipv4.gateway 172.18.0.1 ipv4.dns "8.8.8.8, 172.18.0.12" ipv4.method manual 2>/dev/null || \
+nmcli con mod ens18 ipv4.addresses 172.18.14.${TEAM}/16 ipv4.gateway 172.18.0.1 ipv4.dns "8.8.8.8, 172.18.0.12" ipv4.method manual
 nmcli con up "System eth0" 2>/dev/null || nmcli con up ens18
 echo "✅ Shell/SMB network configured: 172.18.14.${TEAM}"
 ip addr show | grep "inet 172.18"
 EOF
 
-bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+sudo bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
 
                 <h3>🚀 Deployment (Step 2 - Clone & Deploy)</h3>
                 <div class="alert alert-info">
                     After network is configured, clone the repo and run deployment:
                 </div>
                 <pre><code># Clone repository
-git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
-cd /opt/ncae && chmod +x *.sh
+sudo git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
+cd /opt/ncae && sudo chmod +x *.sh
 
 # Run interactive deployment
 sudo ./deploy_all.sh
@@ -1412,14 +1422,19 @@ sudo restorecon -Rv /srv/samba/</code><button class="copy-btn" onclick="copyCode
                 <pre><code>cat > /tmp/net.sh << 'EOF'
 #!/bin/bash
 TEAM=<span class="team-num">11</span>
-cat > /etc/netplan/01-netcfg.yaml << YAML
+cat > /etc/netplan/01-network-manager-all.yaml << YAML
 network:
   version: 2
+  renderer: NetworkManager
   ethernets:
     ens18:
-      addresses: [192.168.${TEAM}.15/24]
-      routes: [{to: default, via: 192.168.${TEAM}.1}]
-      nameservers: {addresses: [8.8.8.8]}
+      addresses:
+        - 192.168.${TEAM}.15/24
+      gateway4: 192.168.${TEAM}.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 192.168.${TEAM}.12
 YAML
 chmod 600 /etc/netplan/01-netcfg.yaml
 netplan apply
@@ -1427,15 +1442,15 @@ echo "✅ Backup network configured: 192.168.${TEAM}.15"
 ip addr show | grep "inet 192.168"
 EOF
 
-bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
+sudo bash /tmp/net.sh</code><button class="copy-btn" onclick="copyCode(this)">Copy</button></pre>
 
                 <h3>🚀 Deployment (Step 2 - Clone & Deploy)</h3>
                 <div class="alert alert-info">
                     After network is configured, clone the repo and run deployment:
                 </div>
                 <pre><code># Clone repository
-git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
-cd /opt/ncae && chmod +x *.sh
+sudo git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
+cd /opt/ncae && sudo chmod +x *.sh
 
 # Run interactive deployment
 sudo ./deploy_all.sh
@@ -1853,8 +1868,8 @@ ping <span class="ip-172">172.18.13.11</span></code><button class="copy-btn" onc
                 <h4>Step 2: Clone & Deploy on Each VM (3-5 min per VM - run in parallel)</h4>
                 <p>On EACH VM individually, run these commands:</p>
                 <pre><code># Clone repository
-git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
-cd /opt/ncae && chmod +x *.sh
+sudo git clone --depth 1 https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae
+cd /opt/ncae && sudo chmod +x *.sh
 
 # Run deployment
 sudo ./deploy_all.sh
@@ -1914,8 +1929,8 @@ sudo ./deploy_all.sh
                             <strong>⚡ Individual Deployment</strong> - Each VM configures itself independently
                         </div>
                         <ul class="checklist">
-                            <li>On EACH VM: <code>git clone https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae</code></li>
-                            <li>On EACH VM: <code>cd /opt/ncae && chmod +x *.sh</code></li>
+                            <li>On EACH VM: <code>sudo sudo git clone https://github.com/noahkelly2024/MU_NCAE.git /opt/ncae</code></li>
+                            <li>On EACH VM: <code>sudo cd /opt/ncae && sudo chmod +x *.sh</code></li>
                             <li>On EACH VM: <code>sudo ./deploy_all.sh</code></li>
                             <li>Select machine type from interactive menu (1-6)</li>
                             <li>Wait 3-5 minutes per VM (all running in parallel!)</li>
