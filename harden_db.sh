@@ -189,7 +189,7 @@ rm -f /root/pg_conf_clean.tmp
 # Append all managed settings exactly once
 cat >> "${PG_CONF}/postgresql.conf" <<PGEOF
 # -- NCAE hardening settings ---------------------------------------
-listen_addresses = '192.168.${TEAM}.7, 127.0.0.1'  # Internal LAN IP + loopback only
+listen_addresses = '*'  # Internal LAN IP + loopback only ?
 password_encryption = scram-sha-256  # Must match METHOD in pg_hba.conf above
 log_connections = on
 log_disconnections = on
